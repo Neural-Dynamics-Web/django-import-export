@@ -21,6 +21,7 @@ from .forms import (
     ConfirmImportForm,
     ExportForm,
     ImportExportFormBase,
+    FlexibleModelForm,
     ImportForm,
     export_action_form_factory,
 )
