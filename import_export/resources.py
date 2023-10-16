@@ -1377,6 +1377,18 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
         return cls.__name__
 
 
+class FlexibleModelResource(ModelResource):
+    def __init__(self, form_fields=None):
+        super().__init__()
+        self.form_fields = form_fields
+
+
+    def get_export_fields(self):
+        return [
+            self.fields[field] for field in self.form_fields
+        ]
+
+
 def modelresource_factory(model, resource_class=ModelResource):
     """
     Factory for creating ``ModelResource`` class for given Django model.

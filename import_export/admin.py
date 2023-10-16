@@ -798,7 +798,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             form_type = self.get_export_form()
         formats = self.get_export_formats()
         form = form_type(
-            formats, request.POST or None, resources=self.get_export_resource_classes()
+            formats, request.POST or None, model=self.model or None, resources=self.get_export_resource_classes()
         )
         if form.is_valid():
             file_format = formats[int(form.cleaned_data["file_format"])]()
@@ -855,6 +855,20 @@ class ImportExportModelAdmin(ImportExportMixin, admin.ModelAdmin):
     """
     Subclass of ModelAdmin with import/export functionality.
     """
+
+
+class FlexibleExportModelAdmin(ExportMixin, admin.ModelAdmin):
+    """
+    Flexible export mixin
+    """
+    export_form_class = FlexibleModelForm
+
+    def get_export_resource_kwargs(self, request, *args, **kwargs):
+        formats = self.get_export_formats()
+        form = self.export_form_class(formats, request.POST or None, model=self.model)
+        # get list of fields from form (hard-coded to 'author' for example purposes)
+        if form.is_valid():
+            return {"form_fields": form.cleaned_data["fields_to_export"]}
 
 
 class ExportActionMixin(ExportMixin):

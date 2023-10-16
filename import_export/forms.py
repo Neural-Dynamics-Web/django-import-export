@@ -14,7 +14,7 @@ class ImportExportFormBase(forms.Form):
         required=False,
     )
 
-    def __init__(self, *args, resources=None, **kwargs):
+    def __init__(self, *args, resources=None, model=None, **kwargs):
         super().__init__(*args, **kwargs)
         if len(args) == 1 and resources is None:
             # issue 1565: definition of __init__() was incorrect
@@ -99,6 +99,22 @@ class ExportForm(ImportExportFormBase):
             choices.insert(0, ("", "---"))
 
         self.fields["file_format"].choices = choices
+
+
+class FlexibleModelForm(ExportForm):
+    fields_to_export = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple,
+        label="Fields to export",
+        required=True,
+        choices=()
+    )
+
+    def __init__(self, formats, *args, **kwargs):
+        super().__init__(formats, *args, **kwargs)
+        model_fields = kwargs.get("model")._meta.get_fields()
+        self.fields["fields_to_export"].choices = [
+            (field.name, field.verbose_name) for field in model_fields
+        ]
 
 
 def export_action_form_factory(formats):
