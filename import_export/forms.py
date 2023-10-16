@@ -113,7 +113,7 @@ class FlexibleModelForm(ExportForm):
         super().__init__(formats, *args, **kwargs)
         model_fields = kwargs.get("model")._meta.get_fields()
         self.fields["fields_to_export"].choices = [
-            (field.name, field.verbose_name) for field in model_fields
+            (field.name, field.name) for field in model_fields
         ]
 
 
